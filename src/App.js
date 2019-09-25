@@ -28,23 +28,27 @@ class Superheroapp extends React.Component{
      })
      .then((response) =>{
          console.log(response.data);
-         if(response.data["result"]["response"] == "error"){
-             alert(response.data["result"]["response"]["error"]);
-             this.setState({jsonObject : {}});
+         if(!this.isEmpty(response.data)){
+             if(response.data["result"]["response"] === "error"){
+                 alert(response.data["result"]["response"]["error"]);
+                 //this.setState({jsonObject : {}});
+             }else{
+                 var jsonFirstResult = response.data["result"]["results"][0];
+                 console.log("--------------------------------------------------------")
+                 //console.log(response.data["results"]);
+                 console.log("json first result = ",jsonFirstResult);
+                 //var tempJsonObject = JSON.parse(response.data);
+                 this.setState({jsonObject : jsonFirstResult});
+                 console.log(this.state.jsonObject);
+                //console.log(response.status);
+                //console.log(response.statusText);
+                //console.log(response.headers);
+                //console.log(response.config);
+                 //console.log("Srini " + this.state.jsonObject["images"]["lg"]);
+            }
          }else{
-             var jsonFirstResult = response.data["result"]["results"][0];
-             console.log("--------------------------------------------------------")
-             //console.log(response.data["results"]);
-             console.log("json first result = ",jsonFirstResult);
-             //var tempJsonObject = JSON.parse(response.data);
-             this.setState({jsonObject : jsonFirstResult});
-             console.log(this.state.jsonObject);
-            //console.log(response.status);
-            //console.log(response.statusText);
-            //console.log(response.headers);
-            //console.log(response.config);
-             //console.log("Srini " + this.state.jsonObject["images"]["lg"]);
-        }
+             alert("request to server failed !!!!");
+         }
          
      }, (error) =>{
          console.log(error);
@@ -60,9 +64,16 @@ class Superheroapp extends React.Component{
  render() {
     return (
         <div>
+        <div id="textContainer">
+        <label>
+          Enter Super Hero Name<br/><br/>
+          <input type="text" name="enter super hero Name" id="superHeroName" onChange={this.appendName} />
+        </label>
+        <input type="submit" value="Submit" onClick={this.requestForData}/>
+        </div>
         <div id="displayContainer">       
         
-        { this.isEmpty(this.state.jsonObject) ? null : <img src={this.state.jsonObject["image"]["url"]} />  }
+        { this.isEmpty(this.state.jsonObject) ? null : <img src={this.state.jsonObject["image"]["url"]} alt={this.state.jsonObject["name"]} />  }
         { this.isEmpty(this.state.jsonObject) ? null : <h1>{this.state.jsonObject["name"]}</h1>}
         {this.isEmpty(this.state.jsonObject) ? null : <h1>powerstats</h1>}
         {this.isEmpty(this.state.jsonObject) ? null : <p>intelligence : {this.state.jsonObject["powerstats"]["intelligence"]}</p>}
@@ -93,13 +104,6 @@ class Superheroapp extends React.Component{
         {this.isEmpty(this.state.jsonObject) ? null : <p>relatives : {this.state.jsonObject["connections"]["relatives"]}</p>}
         
         
-        </div>
-        <div id="displayContainer">
-        <label>
-          Enter Super Hero Name
-          <input type="text" name="enter super hero Name" id="superHeroName" onChange={this.appendName} />
-        </label>
-        <input type="submit" value="Submit" onClick={this.requestForData}/>
         </div>
         </div>
     );
